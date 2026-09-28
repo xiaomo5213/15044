@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>15044 马原考点闪卡</title>
+<style>
+  :root{
+    --bg:#eef1f6; --card:#ffffff; --ink:#232833; --muted:#7a8194;
+    --line:#e4e8f0; --chipbg:#edf0f6;
+    --hero1:#2f5cf0; --hero2:#7a5af5;
+    --brand:#3b6ef5; --brand2:#6a5cf5; --brand-ink:#fff;
+    --red:#e02020; --pg:#98a0b3;
+    --ok:#0fa968; --ok-bg:#e2f6ec;
+    --rev:#e08a00; --rev-bg:#fdf3df;
+    --shadow:0 12px 32px rgba(35,50,90,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#121419; --card:#1d2029; --ink:#e9ebf2; --muted:#9aa2b4;
+      --line:#2a2e3a; --chipbg:#262b37;
+      --hero1:#2b4fd0; --hero2:#6d4be0;
+      --brand:#5b8bff; --brand2:#8b7bff;
+      --red:#ff8080; --pg:#7c8496;
+      --ok:#3ecf8e; --ok-bg:#153226;
+      --rev:#ffc44d; --rev-bg:#3a2d10;
+      --shadow:0 12px 32px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%; height:100%;}
+  body{
+    margin:0; height:100%; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  .app{
+    height:100%; max-width:680px; margin:0 auto;
+    display:flex; flex-direction:column;
+  }
+
+  /* ===== 顶栏 ===== */
+  .hero{
+    flex:0 0 auto; color:#fff; position:relative; overflow:hidden;
+    background:linear-gradient(135deg,var(--hero1),var(--hero2));
+    margin:10px 12px 0;
+    padding:calc(12px + env(safe-area-inset-top)) 18px 14px;
+    border-radius:20px;
+    box-shadow:0 4px 16px rgba(47,92,240,.28);
+  }
+  .hero::after{
+    content:""; position:absolute; right:-46px; top:-46px; width:130px; height:130px;
+    border-radius:50%; background:rgba(255,255,255,.10); pointer-events:none;
+  }
+  .hero::before{
+    content:""; position:absolute; right:34px; bottom:-58px; width:96px; height:96px;
+    border-radius:50%; background:rgba(255,255,255,.07); pointer-events:none;
+  }
+  .hero h1{
+    margin:0; font-size:18px; font-weight:700; letter-spacing:1px; text-align:center;
+  }
+  .statline{
+    margin-top:8px; text-align:center; font-size:12px; opacity:.92;
+    display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+  }
+  .statline b{font-weight:700;}
+  .anav{
+    display:block; margin:10px auto 0; max-width:270px; text-align:center; text-decoration:none;
+    font-size:13px; font-weight:600; color:#fff; padding:8px 12px; border-radius:11px;
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.32);
+  }
+  .anav:active{transform:scale(.98);}
+  .hbar{margin-top:10px; height:3px; background:rgba(255,255,255,.22); border-radius:2px; overflow:hidden;}
+  .hbar i{display:block; height:100%; width:0; background:#fff; border-radius:2px; transition:width .3s;}
+  .hmeta{
+    margin-top:6px; display:flex; justify-content:space-between; align-items:center;
+    font-size:11.5px; opacity:.9;
+  }
+  .hmeta .ch{max-width:62%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:.85;}
+
+  /* ===== 筛选 ===== */
+  .filters{flex:0 0 auto; padding:10px 0 2px;}
+  /* 章节横向滚动 TAB 导航 */
+  .tabwrap{position:relative; padding:0 14px;}
+  .tabwrap:after{
+    content:""; position:absolute; top:0; right:0; bottom:0; width:26px; pointer-events:none;
+    background:linear-gradient(90deg, transparent, var(--bg));
+  }
+  .chips{
+    display:flex; gap:8px; overflow-x:auto; padding:2px 26px 8px 0;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    scroll-behavior:smooth; scroll-snap-type:x proximity;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto; font-size:13px; padding:7px 14px; border-radius:999px;
+    background:var(--card); border:1px solid var(--line); color:var(--muted);
+    cursor:pointer; white-space:nowrap; transition:all .15s; scroll-snap-align:start;
+    position:relative;
+  }
+  .chip.on{background:var(--brand); border-color:var(--brand); color:#fff; font-weight:600;}
+  .chip.on:after{
+    content:""; position:absolute; left:50%; bottom:-6px; width:16px; height:3px;
+    margin-left:-8px; border-radius:2px; background:var(--brand);
+  }
+  .frow{display:flex; gap:8px; align-items:center; margin-top:2px; padding:0 14px;}
+  .seg{display:flex; background:var(--card); border:1px solid var(--line); border-radius:11px; overflow:hidden; flex:1;}
+  .seg button{
+    flex:1; border:0; background:transparent; color:var(--muted);
+    padding:8px 2px; font-size:13px; cursor:pointer;
+  }
+  .seg button.on{background:var(--brand); color:#fff; font-weight:600;}
+  select{
+    appearance:none; -webkit-appearance:none; background:var(--card); color:var(--ink);
+    border:1px solid var(--line); border-radius:11px; padding:8px 4px; font-size:13px;
+    flex:1; min-width:0; text-align:center; text-align-last:center;
+  }
+  .icobtn{
+    flex:0 0 auto; border:1px solid var(--line); background:var(--card); color:var(--muted);
+    border-radius:11px; padding:8px 10px; font-size:13px; cursor:pointer;
+  }
+  .icobtn.on{color:var(--brand); border-color:var(--brand); font-weight:600;}
+  @media (max-width:380px){
+    .icobtn{padding:8px 8px; font-size:12px;}
+    .seg button{font-size:12.5px;}
+  }
+
+  /* ===== 卡片 ===== */
+  main{flex:1 1 auto; min-height:0; display:flex; padding:10px 14px;}
+  .scene{width:100%; height:100%; perspective:1600px;}
+  .scene.inR{animation:inR .22s ease;}
+  .scene.inL{animation:inL .22s ease;}
+  @keyframes inR{from{opacity:.25; transform:translateX(16px);} to{opacity:1; transform:none;}}
+  @keyframes inL{from{opacity:.25; transform:translateX(-16px);} to{opacity:1; transform:none;}}
+  .card{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d; transition:transform .4s cubic-bezier(.2,.7,.3,1); cursor:pointer;
+  }
+  .card.flip{transform:rotateY(180deg);}
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; overflow:auto;
+  }
+  .face.back{transform:rotateY(180deg);}
+  .meta{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:0 0 auto;}
+  .tag{font-size:11px; padding:3px 10px; border-radius:999px; background:var(--chipbg); color:var(--muted);}
+  .tag.type{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-weight:600;}
+  .tag.known{background:var(--ok-bg); color:var(--ok);}
+  .tag.review{background:var(--rev-bg); color:var(--rev);}
+  .qtext{font-size:17px; line-height:1.9; font-weight:600; margin:auto 0; white-space:pre-wrap;}
+  .rd{color:var(--red);}
+  .pg{
+    font-size:11px; color:var(--pg); background:var(--chipbg);
+    padding:1px 6px; border-radius:6px; margin:0 1px; font-weight:400;
+  }
+  .hint{
+    font-size:12px; color:var(--muted); text-align:center; margin-top:10px; flex:0 0 auto;
+  }
+  /* 背面内容块：整体垂直居中，内容超出时从顶部开始可滚 */
+  .bwrap{margin:auto 0; padding:6px 0 2px;}
+  .blk{flex:0 0 auto;}
+  .blk + .blk{margin-top:14px;}
+  .blk .lbl{
+    display:inline-block; font-size:12px; font-weight:600; color:var(--brand);
+    background:var(--chipbg); border-radius:8px; padding:3px 10px; margin-bottom:8px;
+  }
+  .blk .lbl.gold{color:var(--rev);}
+  .blk .txt{font-size:14.5px; line-height:1.85; white-space:pre-wrap;}
+  .tip{
+    font-size:11px; color:var(--muted); margin-top:12px; padding-top:10px;
+    border-top:1px dashed var(--line); flex:0 0 auto;
+  }
+  .empty{color:var(--muted); font-size:15px; text-align:center; margin:auto;}
+
+  /* ===== 底部操作区 ===== */
+  .dock{
+    flex:0 0 auto; padding:2px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .controls{display:grid; grid-template-columns:1fr 1.35fr 1fr; gap:10px;}
+  .btn{
+    border:1px solid var(--line); border-radius:14px; padding:13px 4px; font-size:15px;
+    font-weight:600; cursor:pointer; background:var(--card); color:var(--ink);
+    transition:transform .1s;
+  }
+  .btn:active{transform:scale(.95);}
+  .btn.rev{background:var(--rev-bg); color:var(--rev); border-color:transparent;}
+  .btn.ok{background:var(--ok-bg); color:var(--ok); border-color:transparent;}
+  .btn.main{
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    color:#fff; border-color:transparent; box-shadow:0 6px 16px rgba(59,110,245,.35);
+  }
+  .navrow{display:flex; gap:10px; margin-top:9px;}
+  .navrow .btn{flex:1; font-weight:500; color:var(--muted); font-size:13.5px; padding:10px 4px;}
+
+  @media (max-width:380px){
+    .qtext{font-size:16px;}
+    .blk .txt{font-size:14px;}
+    .btn{font-size:14px; padding:12px 2px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hero">
+    <h1>📚 15044 马原考点闪卡</h1>
+    <div class="statline">
+      <span>✓ 已掌握 <b id="okCount">0</b></span>
+      <span>↻ 再看看 <b id="revCount">0</b></span>
+      <span>○ 未标记 <b id="newCount">0</b></span>
+    </div>
+    <div class="hbar"><i id="bar"></i></div>
+    <div class="hmeta">
+      <span id="posText">- / -</span>
+      <span class="ch" id="chNow"></span>
+    </div>
+    <a class="anav" href="quiz.html">🔥 5 套高频押题卷（真题大数据） →</a>
+  </header>
+
+  <div class="filters" id="filters">
+    <div class="tabwrap">
+      <div class="chips" id="chips"><span class="chip on" data-v="">全部 190</span></div>
+    </div>
+    <div class="frow">
+      <div class="seg" id="typeSeg">
+        <button data-v="" class="on">全部</button>
+        <button data-v="单选">单选</button>
+        <button data-v="简答">简答</button>
+      </div>
+      <select id="stSel">
+        <option value="">全部状态</option>
+        <option value="un">未掌握</option>
+        <option value="known">已掌握</option>
+        <option value="review">再看看</option>
+      </select>
+      <button class="icobtn" id="randBtn">🔀</button>
+      <button class="icobtn" id="resetBtn" title="清空标记">↺</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="scene" id="scene">
+      <div class="card" id="card">
+        <div class="face front" id="faceFront"></div>
+        <div class="face back" id="faceBack"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="dock">
+    <div class="controls">
+      <button class="btn rev" id="revBtn">↻ 再看看</button>
+      <button class="btn main" id="flipBtn">显示答案</button>
+      <button class="btn ok" id="okBtn">✓ 已掌握</button>
+    </div>
+    <div class="navrow">
+      <button class="btn" id="prevBtn">← 上一张</button>
+      <button class="btn" id="nextBtn">下一张 →</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="data_all.js"></script>
+<script>
+(function(){
+  var CARDS = window.FLASHCARDS || [];
+  var KEY = "mx15044_flashcards_v1";
+  var store = {mastery:{}};
+  try{
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if(saved && saved.mastery) store.mastery = saved.mastery;
+  }catch(e){}
+
+  function $(id){ return document.getElementById(id); }
+  var els = {
+    card:$("card"), scene:$("scene"), front:$("faceFront"), back:$("faceBack"),
+    filters:$("filters"),
+    chips:$("chips"), typeSeg:$("typeSeg"), stSel:$("stSel"),
+    randBtn:$("randBtn"), resetBtn:$("resetBtn"),
+    flipBtn:$("flipBtn"), okBtn:$("okBtn"), revBtn:$("revBtn"),
+    prevBtn:$("prevBtn"), nextBtn:$("nextBtn"),
+    bar:$("bar"), posText:$("posText"), chNow:$("chNow"),
+    okCount:$("okCount"), revCount:$("revCount"), newCount:$("newCount")
+  };
+  function chShort(ch){
+    if(ch.slice(0,2) === "导论") return "导论";
+    return ch.slice(0,3);
+  }
+
+  var state = {ch:"", type:"", status:"", rand:false, idx:0};
+  var list = [];
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function hi(s){ return esc(s).replace(/【(.+?)】/g,"<span class='rd'>【$1】</span>"); }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){}
+  }
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function buildList(){
+    list = CARDS.filter(function(c){
+      if(state.ch && c.ch !== state.ch) return false;
+      if(state.type && c.type !== state.type) return false;
+      if(state.status){
+        var m = store.mastery[c.id];
+        if(state.status === "known" && m !== "known") return false;
+        if(state.status === "review" && m !== "review") return false;
+        if(state.status === "un" && m === "known") return false;
+      }
+      return true;
+    });
+    if(state.rand) shuffle(list);
+    if(state.idx >= list.length) state.idx = 0;
+  }
+  function tags(c){
+    var m = store.mastery[c.id];
+    var h = "<span class='tag type'>"+esc(c.type)+" "+esc(c.id)+"</span>"
+          + "<span class='tag'>"+esc(chShort(c.ch))+"</span>"
+          + "<span class='tag'>"+esc(c.page)+"</span>";
+    if(m === "known") h += "<span class='tag known'>✓ 已掌握</span>";
+    if(m === "review") h += "<span class='tag review'>↻ 再看看</span>";
+    return h;
+  }
+  function counts(){
+    var ok=0, rev=0, un=0;
+    CARDS.forEach(function(x){
+      var m = store.mastery[x.id];
+      if(m === "known") ok++; else if(m === "review") rev++; else un++;
+    });
+    els.okCount.textContent = ok;
+    els.revCount.textContent = rev;
+    els.newCount.textContent = un;
+  }
+  function render(){
+    counts();
+    if(!list.length){
+      els.front.innerHTML = "<div class='empty'>没有符合条件的卡片<br><br><span style='font-size:13px'>试试放宽上方筛选条件</span></div>";
+      els.back.innerHTML = "";
+      els.posText.textContent = "0 / 0";
+      els.chNow.textContent = "";
+      els.bar.style.width = "0";
+      return;
+    }
+    var c = list[state.idx];
+    var qHtml = c.qh ? c.qh : hi(c.q);
+    els.front.innerHTML = "<div class='meta'>"+tags(c)+"</div>"
+      + "<div class='qtext'>"+qHtml+"</div>"
+      + "<div class='hint'>👆 点击卡片看答案 · 左右滑动切换</div>";
+    var backHtml = "<div class='meta'>"+tags(c)+"</div>"
+      + "<div class='bwrap'>";
+    if(c.o){
+      backHtml += "<div class='blk'><span class='lbl gold'>📝 提纲要点</span>"
+                + "<div class='txt'>"+c.o+"</div></div>";
+    }
+    backHtml += "<div class='blk'><span class='lbl'>📖 教材依据</span>"
+              + "<div class='txt'>"+hi(c.a)+"</div></div>"
+              + "<div class='tip'>红色 = 提纲标注的得分关键词 · 提纲页码与教材页略有偏移，翻书时前后几页内查找</div>"
+              + "</div>";
+    els.back.innerHTML = backHtml;
+    els.posText.textContent = (state.idx+1)+" / "+list.length;
+    els.chNow.textContent = c.ch;
+    els.bar.style.width = ((state.idx+1)/list.length*100)+"%";
+  }
+  function setFlip(f){
+    els.card.classList.toggle("flip", !!f);
+    els.flipBtn.textContent = f ? "隐 藏 答 案" : "显示答案";
+  }
+  function animate(dir){
+    els.scene.classList.remove("inR","inL");
+    void els.scene.offsetWidth;
+    els.scene.classList.add(dir > 0 ? "inR" : "inL");
+  }
+  function go(d){
+    if(!list.length) return;
+    state.idx = (state.idx + d + list.length) % list.length;
+    setFlip(false); render(); animate(d);
+  }
+  function mark(m){
+    if(!list.length) return;
+    var c = list[state.idx];
+    if(store.mastery[c.id] === m) delete store.mastery[c.id];
+    else store.mastery[c.id] = m;
+    save();
+    if(m) setTimeout(function(){ go(1); }, 250); else render();
+  }
+  function rebuild(){ buildList(); setFlip(false); render(); }
+
+  /* 章节 TAB：常显横向滚动导航 */
+  var chs = [];
+  CARDS.forEach(function(c){ if(chs.indexOf(c.ch) < 0) chs.push(c.ch); });
+  chs.forEach(function(ch){
+    var n = 0;
+    CARDS.forEach(function(x){ if(x.ch === ch) n++; });
+    var s = document.createElement("span");
+    s.className = "chip"; s.setAttribute("data-v", ch);
+    s.textContent = chShort(ch) + " " + n;
+    els.chips.appendChild(s);
+  });
+  els.chips.addEventListener("click", function(e){
+    var t = e.target;
+    if(!t.classList || !t.classList.contains("chip")) return;
+    Array.prototype.forEach.call(els.chips.children, function(x){ x.classList.remove("on"); });
+    t.classList.add("on");
+    /* 把选中 TAB 滚到可视区中间 */
+    var box = els.chips, want = t.offsetLeft - (box.clientWidth - t.offsetWidth) / 2;
+    if(box.scrollTo) box.scrollTo({left: Math.max(0, want), behavior:"smooth"});
+    else box.scrollLeft = Math.max(0, want);
+    state.ch = t.getAttribute("data-v");
+    state.idx = 0;
+    rebuild();
+  });
+
+  /* 翻面 / 导航 / 评分 */
+  var suppressClick = false;
+  els.card.addEventListener("click", function(){
+    if(suppressClick) return;
+    setFlip(!els.card.classList.contains("flip"));
+  });
+  els.flipBtn.addEventListener("click", function(){ setFlip(!els.card.classList.contains("flip")); });
+  els.prevBtn.addEventListener("click", function(){ go(-1); });
+  els.nextBtn.addEventListener("click", function(){ go(1); });
+  els.okBtn.addEventListener("click", function(){ mark("known"); });
+  els.revBtn.addEventListener("click", function(){ mark("review"); });
+  els.stSel.addEventListener("change", function(){ state.status = this.value; state.idx = 0; rebuild(); });
+  Array.prototype.forEach.call(els.typeSeg.querySelectorAll("button"), function(b){
+    b.addEventListener("click", function(){
+      Array.prototype.forEach.call(els.typeSeg.querySelectorAll("button"), function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      state.type = b.getAttribute("data-v");
+      state.idx = 0; rebuild();
+    });
+  });
+  els.randBtn.addEventListener("click", function(){
+    state.rand = !state.rand;
+    els.randBtn.classList.toggle("on", state.rand);
+    state.idx = 0; rebuild();
+  });
+  els.resetBtn.addEventListener("click", function(){
+    if(confirm("确定清空全部「已掌握 / 再看看」标记？")){
+      store.mastery = {}; save(); render();
+    }
+  });
+
+  /* 移动端左右滑动切卡 */
+  var tx=0, ty=0, tt=0;
+  els.card.addEventListener("touchstart", function(e){
+    if(e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY; tt = Date.now();
+  }, {passive:true});
+  els.card.addEventListener("touchend", function(e){
+    var dx = e.changedTouches[0].clientX - tx;
+    var dy = e.changedTouches[0].clientY - ty;
+    var dt = Date.now() - tt;
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5 && dt < 700){
+      go(dx < 0 ? 1 : -1);
+      suppressClick = true;
+      setTimeout(function(){ suppressClick = false; }, 450);
+    }
+  }, {passive:true});
+
+  /* 键盘（桌面） */
+  document.addEventListener("keydown", function(e){
+    if(e.target && /SELECT|INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if(e.code === "Space" || e.key === "Enter"){ e.preventDefault(); setFlip(!els.card.classList.contains("flip")); }
+    else if(e.key === "ArrowRight") go(1);
+    else if(e.key === "ArrowLeft") go(-1);
+    else if(e.key === "1") mark("review");
+    else if(e.key === "2") mark("known");
+  });
+
+  buildList();
+  els.chips.children[0].textContent = "全部 " + CARDS.length;
+  render();
+})();
+</script>
+</body>
+</html>

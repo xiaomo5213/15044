@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>15044 马原 · 5 套高频押题卷</title>
+<style>
+  :root{
+    --bg:#eef1f6; --card:#ffffff; --ink:#232833; --muted:#7a8194;
+    --line:#e4e8f0; --chipbg:#edf0f6;
+    --hero1:#2f5cf0; --hero2:#7a5af5;
+    --brand:#3b6ef5; --brand2:#6a5cf5;
+    --red:#e02020; --pg:#98a0b3;
+    --ok:#0fa968; --ok-bg:#e2f6ec;
+    --rev:#e08a00; --rev-bg:#fdf3df;
+    --shadow:0 12px 32px rgba(35,50,90,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#121419; --card:#1d2029; --ink:#e9ebf2; --muted:#9aa2b4;
+      --line:#2a2e3a; --chipbg:#262b37;
+      --hero1:#2b4fd0; --hero2:#6d4be0;
+      --brand:#5b8bff; --brand2:#8b7bff;
+      --red:#ff8080; --pg:#7c8496;
+      --ok:#3ecf8e; --ok-bg:#153226;
+      --rev:#ffc44d; --rev-bg:#3a2d10;
+      --shadow:0 12px 32px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%; height:100%;}
+  body{
+    margin:0; height:100%; overflow:hidden; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  .app{height:100%; max-width:680px; margin:0 auto; display:flex; flex-direction:column;}
+
+  .hero{
+    flex:0 0 auto; color:#fff; position:relative; overflow:hidden;
+    background:linear-gradient(135deg,var(--hero1),var(--hero2));
+    margin:10px 12px 0; padding:calc(12px + env(safe-area-inset-top)) 18px 14px;
+    border-radius:20px; box-shadow:0 4px 16px rgba(47,92,240,.28);
+  }
+  .hero::after{content:""; position:absolute; right:-46px; top:-46px; width:130px; height:130px;
+    border-radius:50%; background:rgba(255,255,255,.10); pointer-events:none;}
+  .hero h1{margin:0; font-size:18px; font-weight:700; letter-spacing:1px; text-align:center;}
+  .statline{margin-top:8px; text-align:center; font-size:12px; opacity:.92;
+    display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
+  .hbar{margin-top:10px; height:3px; background:rgba(255,255,255,.22); border-radius:2px; overflow:hidden;}
+  .hbar i{display:block; height:100%; width:0; background:#fff; border-radius:2px; transition:width .3s;}
+  .hmeta{margin-top:6px; display:flex; justify-content:space-between; align-items:center;
+    font-size:11.5px; opacity:.9;}
+  .hmeta .ch{max-width:64%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:.85;}
+  .anav{
+    display:block; margin:10px auto 0; max-width:270px; text-align:center; text-decoration:none;
+    font-size:13px; font-weight:600; color:#fff; padding:8px 12px; border-radius:11px;
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.32);
+  }
+  .anav:active{transform:scale(.98);}
+
+  .papers{
+    flex:0 0 auto; padding:10px 14px 0;
+    display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .papers::-webkit-scrollbar{display:none;}
+  .pchip{
+    flex:0 0 auto; font-size:13px; padding:7px 14px; border-radius:999px;
+    background:var(--card); border:1px solid var(--line); color:var(--muted); white-space:nowrap;
+  }
+  .pchip.on{background:var(--brand); border-color:var(--brand); color:#fff; font-weight:600;}
+
+  main{flex:1 1 auto; min-height:0; display:flex; padding:10px 14px;}
+  .scene{width:100%; height:100%; perspective:1600px;}
+  .scene.inR{animation:inR .22s ease;} .scene.inL{animation:inL .22s ease;}
+  @keyframes inR{from{opacity:.25; transform:translateX(16px);} to{opacity:1; transform:none;}}
+  @keyframes inL{from{opacity:.25; transform:translateX(-16px);} to{opacity:1; transform:none;}}
+  .card{position:relative; width:100%; height:100%; transform-style:preserve-3d;
+    transition:transform .4s cubic-bezier(.2,.7,.3,1); cursor:pointer;}
+  .card.flip{transform:rotateY(180deg);}
+  .face{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; overflow:auto;}
+  .face.back{transform:rotateY(180deg);}
+  .meta{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:0 0 auto;}
+  .tag{font-size:11px; padding:3px 10px; border-radius:999px; background:var(--chipbg); color:var(--muted);}
+  .tag.k{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-weight:600;}
+  .tag.hot{background:#ffe9e9; color:#d92b2b; font-weight:600;}
+  @media (prefers-color-scheme: dark){ .tag.hot{background:#3a1c1c; color:#ff8b8b;} }
+  .qtext{font-size:17px; line-height:1.9; font-weight:600; margin:auto 0; white-space:pre-wrap;}
+  .rd{color:var(--red);}
+  .pg{font-size:11px; color:var(--pg); background:var(--chipbg); padding:1px 6px;
+    border-radius:6px; margin:0 1px; font-weight:400;}
+  .hint{font-size:12px; color:var(--muted); text-align:center; margin-top:10px; flex:0 0 auto;}
+  .bwrap{margin:auto 0; padding:6px 0 2px;}
+  .blk+.blk{margin-top:14px;}
+  .blk .lbl{display:inline-block; font-size:12px; font-weight:600; color:var(--brand);
+    background:var(--chipbg); border-radius:8px; padding:3px 10px; margin-bottom:8px;}
+  .blk .lbl.gold{color:var(--rev);}
+  .blk .txt{font-size:14.5px; line-height:1.85; white-space:pre-wrap;}
+  .tip{font-size:11px; color:var(--muted); margin-top:12px; padding-top:10px;
+    border-top:1px dashed var(--line); flex:0 0 auto;}
+  .empty{color:var(--muted); font-size:15px; text-align:center; margin:auto;}
+
+  .dock{flex:0 0 auto; padding:2px 14px calc(10px + env(safe-area-inset-bottom));}
+  .controls{display:grid; grid-template-columns:1fr 1.35fr 1fr; gap:10px;}
+  .btn{border:1px solid var(--line); border-radius:14px; padding:13px 4px; font-size:15px;
+    font-weight:600; cursor:pointer; background:var(--card); color:var(--ink); transition:transform .1s;}
+  .btn:active{transform:scale(.95);}
+  .btn.rev{background:var(--rev-bg); color:var(--rev); border-color:transparent;}
+  .btn.ok{background:var(--ok-bg); color:var(--ok); border-color:transparent;}
+  .btn.main{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff;
+    border-color:transparent; box-shadow:0 6px 16px rgba(59,110,245,.35);}
+  .navrow{display:flex; gap:10px; margin-top:9px;}
+  .navrow .btn{flex:1; font-weight:500; color:var(--muted); font-size:13.5px; padding:10px 4px;}
+  .navrow .btn.on{background:var(--ok-bg); color:var(--ok); border-color:transparent; font-weight:600;}
+
+  /* 结果页 */
+  .result{position:fixed; inset:0; background:var(--bg); z-index:50; display:none;
+    flex-direction:column; padding:calc(24px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));}
+  .result.show{display:flex;}
+  .result h2{margin:0 0 4px; font-size:20px; text-align:center;}
+  .result .score{font-size:46px; font-weight:800; text-align:center; margin:6px 0 2px;
+    background:linear-gradient(135deg,var(--brand),var(--brand2)); -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent; background-clip:text;}
+  .result .scoreSub{text-align:center; font-size:13px; color:var(--muted); margin-bottom:16px;}
+  .rlist{flex:1; overflow:auto; -webkit-overflow-scrolling:touch;}
+  .ritem{display:flex; gap:10px; align-items:flex-start; padding:11px 12px; border-radius:13px;
+    background:var(--card); border:1px solid var(--line); margin-bottom:9px; font-size:13.5px; line-height:1.6;}
+  .ritem .st{flex:0 0 auto; width:22px; height:22px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff;}
+  .ritem.ok .st{background:var(--ok);} .ritem.no .st{background:var(--rev);}
+  .ritem .tx{flex:1;}
+  .ritem .tx small{display:block; color:var(--muted); font-size:11.5px; margin-top:3px;}
+  .result .btn{margin-top:12px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hero">
+    <h1>🔥 15044 马原 · 5 套高频押题卷</h1>
+    <div class="statline">
+      <span>✓ 答对 <b id="okCount">0</b></span>
+      <span>✗ 答错 <b id="noCount">0</b></span>
+      <span>已做 <b id="doneCount">0</b></span>
+    </div>
+    <div class="hbar"><i id="bar"></i></div>
+    <div class="hmeta">
+      <span id="posText">- / -</span>
+      <span class="ch" id="freqText"></span>
+    </div>
+    <a class="anav" href="index.html">📚 返回考点闪卡 →</a>
+  </header>
+
+  <div class="papers" id="papers"></div>
+
+  <main>
+    <div class="scene" id="scene">
+      <div class="card" id="card">
+        <div class="face front" id="faceFront"></div>
+        <div class="face back" id="faceBack"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="dock">
+    <div class="controls">
+      <button class="btn rev" id="noBtn">✗ 答错</button>
+      <button class="btn main" id="flipBtn">对答案</button>
+      <button class="btn ok" id="okBtn">✓ 答对</button>
+    </div>
+    <div class="navrow">
+      <button class="btn" id="prevBtn">← 上一题</button>
+      <button class="btn" id="resultBtn">📊 查看成绩</button>
+      <button class="btn" id="nextBtn">下一题 →</button>
+    </div>
+  </div>
+</div>
+
+<div class="result" id="result">
+  <h2 id="rTitle">本套成绩</h2>
+  <div class="score" id="rScore">0%</div>
+  <div class="scoreSub" id="rSub"></div>
+  <div class="rlist" id="rList"></div>
+  <button class="btn main" id="rClose">继续练习</button>
+</div>
+
+<script src="data_all.js"></script>
+<script>
+(function(){
+  var PAPERS = window.QUIZPAPERS || [];
+  var KEY = "mx15044_quiz_v1";
+  var store = {mark:{}};
+  try{
+    var sv = JSON.parse(localStorage.getItem(KEY) || "null");
+    if(sv && sv.mark) store.mark = sv.mark;
+  }catch(e){}
+
+  function $(id){ return document.getElementById(id); }
+  var els = {
+    card:$("card"), scene:$("scene"), front:$("faceFront"), back:$("faceBack"),
+    papers:$("papers"), flipBtn:$("flipBtn"), okBtn:$("okBtn"), noBtn:$("noBtn"),
+    prevBtn:$("prevBtn"), nextBtn:$("nextBtn"), resultBtn:$("resultBtn"),
+    bar:$("bar"), posText:$("posText"), freqText:$("freqText"),
+    okCount:$("okCount"), noCount:$("noCount"), doneCount:$("doneCount"),
+    result:$("result"), rTitle:$("rTitle"), rScore:$("rScore"), rSub:$("rSub"),
+    rList:$("rList"), rClose:$("rClose")
+  };
+
+  // 为每道题生成全局唯一键
+  PAPERS.forEach(function(p){
+    p.items.forEach(function(it, i){ it._k = p.name + "#" + i; });
+  });
+
+  var state = {pi:0, idx:0};
+  function cur(){ return PAPERS[state.pi]; }
+  function item(){ return cur().items[state.idx]; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+  function best(i){ return store.mark[PAPERS[state.pi].items[i]._k] || ""; }
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function hi(s){ return esc(s).replace(/【(.+?)】/g,"<span class='rd'>【$1】</span>"); }
+
+  function counts(){
+    var ok=0,no=0,done=0;
+    PAPERS.forEach(function(p){
+      p.items.forEach(function(it){
+        var m = store.mark[it._k];
+        if(m === "ok"){ ok++; done++; } else if(m === "no"){ no++; done++; }
+      });
+    });
+    els.okCount.textContent = ok;
+    els.noCount.textContent = no;
+    els.doneCount.textContent = done;
+  }
+  function tags(it){
+    return "<span class='tag k'>"+esc(it.kind)+" "+esc(it.id)+"</span>"
+         + "<span class='tag hot'>🔥 历年考 "+esc(it.freq)+" 次</span>"
+         + "<span class='tag'>考点 "+esc(it.page)+"</span>";
+  }
+  function render(){
+    counts();
+    if(!PAPERS.length){ els.front.innerHTML = "<div class='empty'>暂无数据</div>"; return; }
+    var it = item();
+    var m = store.mark[it._k];
+    els.front.innerHTML = "<div class='meta'>"+tags(it)+"</div>"
+      + "<div class='qtext'>"+hi(it.q)+"</div>"
+      + "<div class='hint'>👆 点击卡片或「对答案」查看教材依据 · 左右滑动切换</div>";
+    var back = "<div class='meta'>"+tags(it)+"</div><div class='bwrap'>";
+    if(it.o){
+      back += "<div class='blk'><span class='lbl gold'>📝 提纲要点</span><div class='txt'>"+it.o+"</div></div>";
+    }
+    back += "<div class='blk'><span class='lbl'>📖 教材依据</span><div class='txt'>"+hi(it.a)+"</div></div>"
+          + "<div class='tip'>🔥 该考点在 "+esc((it.years||[]).join("、")||"历年")+" 等 "+
+            esc((it.years||[]).length)+" 份真题中出现过 · 红色为得分关键词</div></div>";
+    els.back.innerHTML = back;
+    els.posText.textContent = (state.idx+1)+" / "+cur().items.length;
+    els.freqText.textContent = it.ch;
+    els.bar.style.width = ((state.idx+1)/cur().items.length*100)+"%";
+    els.okBtn.classList.toggle("on", m === "ok");
+    els.noBtn.classList.toggle("on", m === "no");
+    els.nextBtn.textContent = state.idx === cur().items.length-1 ? "末题 →" : "下一题 →";
+    els.card.classList.remove("flip");
+    els.flipBtn.textContent = "对答案";
+  }
+  function setFlip(f){
+    els.card.classList.toggle("flip", !!f);
+    els.flipBtn.textContent = f ? "收起答案" : "对答案";
+  }
+  function animate(d){
+    els.scene.classList.remove("inR","inL"); void els.scene.offsetWidth;
+    els.scene.classList.add(d > 0 ? "inR" : "inL");
+  }
+  function go(d){
+    var n = cur().items.length;
+    state.idx = (state.idx + d + n) % n;
+    render(); animate(d);
+  }
+  function mark(m){
+    var it = item();
+    store.mark[it._k] = (store.mark[it._k] === m) ? "" : m;
+    if(!store.mark[it._k]) delete store.mark[it._k];
+    save();
+    setTimeout(function(){ go(1); }, 220);
+  }
+  function switchPaper(i){
+    state.pi = i; state.idx = 0;
+    Array.prototype.forEach.call(els.papers.children, function(x, j){
+      x.classList.toggle("on", j === i);
+    });
+    render();
+  }
+
+  // 卷选择
+  PAPERS.forEach(function(p, i){
+    var s = document.createElement("span");
+    s.className = "pchip"; s.textContent = p.name.replace("押题卷", "卷") + " · " + p.items.length + "题";
+    els.papers.appendChild(s);
+  });
+  els.papers.addEventListener("click", function(e){
+    if(!e.target.classList.contains("pchip")) return;
+    var i = Array.prototype.indexOf.call(els.papers.children, e.target);
+    if(i >= 0) switchPaper(i);
+  });
+
+  els.card.addEventListener("click", function(){ setFlip(!els.card.classList.contains("flip")); });
+  els.flipBtn.addEventListener("click", function(){ setFlip(!els.card.classList.contains("flip")); });
+  els.prevBtn.addEventListener("click", function(){ go(-1); });
+  els.nextBtn.addEventListener("click", function(){ go(1); });
+  els.okBtn.addEventListener("click", function(){ mark("ok"); });
+  els.noBtn.addEventListener("click", function(){ mark("no"); });
+
+  els.resultBtn.addEventListener("click", function(){
+    var p = cur(), ok=0, no=0, undone=0;
+    p.items.forEach(function(it){
+      var m = store.mark[it._k];
+      if(m === "ok") ok++; else if(m === "no") no++; else undone++;
+    });
+    var total = p.items.length;
+    var rate = Math.round(ok / total * 100);
+    els.rTitle.textContent = p.name + " 成绩";
+    els.rScore.textContent = rate + "%";
+    els.rSub.textContent = "答对 " + ok + " / " + total + " 题 · 答错 " + no + " · 未作答 " + undone
+      + "　" + (rate >= 90 ? "优秀，保持！" : rate >= 70 ? "不错，再巩固错题" : "加油，重点看错题依据");
+    els.rList.innerHTML = p.items.map(function(it){
+      var m = store.mark[it._k];
+      var cls = m === "ok" ? "ok" : "no";
+      var sym = m === "ok" ? "✓" : (m === "no" ? "✗" : "·");
+      var st = m ? ("<span class='st'>"+sym+"</span>") : "<span class='st' style='background:#c8cdd8'>·</span>";
+      return "<div class='ritem "+cls+"'>"+st+"<div class='tx'>"+esc(it.q)
+           + "<small>"+esc(it.kind)+" "+esc(it.id)+" · 🔥历年考"+esc(it.freq)+"次 · 考点"+esc(it.page)
+           + (m ? "" : " · 未作答")+"</small></div></div>";
+    }).join("");
+    els.result.classList.add("show");
+  });
+  els.rClose.addEventListener("click", function(){ els.result.classList.remove("show"); });
+
+  // 滑动切题
+  var tx=0,ty=0,tt=0,sup=false;
+  els.card.addEventListener("touchstart", function(e){
+    if(e.touches.length !== 1) return;
+    tx=e.touches[0].clientX; ty=e.touches[0].clientY; tt=Date.now();
+  }, {passive:true});
+  els.card.addEventListener("touchend", function(e){
+    var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty, dt=Date.now()-tt;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5 && dt<700){
+      go(dx<0?1:-1); sup=true; setTimeout(function(){ sup=false; }, 450);
+    }
+  }, {passive:true});
+  els.card.addEventListener("click", function(e){ if(sup){ e.stopPropagation(); } }, true);
+
+  switchPaper(0);
+})();
+</script>
+</body>
+</html>
